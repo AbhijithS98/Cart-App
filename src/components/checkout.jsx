@@ -25,6 +25,16 @@ const Checkout = () => {
     prevCart.map((item) => item.id === id ? {...item,quantity: item.quantity + 1} : item))
   };
 
+  const decrease = (prod) => {
+    if(prod.quantity===1){
+      setCartItems((prevCart) =>
+      prevCart.filter((item) => item.id !== prod.id))
+    } else{
+      setCartItems((prevCart) => 
+      prevCart.map((item) => item.id === prod.id ? {...item,quantity: item.quantity - 1} : item))
+    }
+  };
+
   useEffect(()=>{
     if(cart.length){
       const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -36,6 +46,9 @@ const Checkout = () => {
   useEffect(()=>{
     if(Total >= THRESHOLD){
       setCartItems((prevCart) => [...prevCart,{...FREE_GIFT,quantity:1}])
+    } else if(Total < THRESHOLD){
+      setCartItems((prevCart) => 
+      prevCart.filter((item) => item.id !== FREE_GIFT.id))
     }
   },[Total])
 
@@ -99,7 +112,7 @@ const Checkout = () => {
             <div className='d-flex justify-content-between'>
               {item.price===0 ? (<Button variant='info' size="sm" className='mt-2'>Free Gift</Button>) : (
                <>
-               <Button className='mt-2' variant='danger' size="sm">-</Button>
+               <Button onClick={()=>decrease(item)} className='mt-2' variant='danger' size="sm">-</Button>
                <h5 className='mt-2 mx-2'>{item.quantity}</h5>
                <Button onClick={()=>increase(item.id)} className='mt-2' variant='success' size="sm">+</Button>
                </>
